@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const pinoLogger = require('./logger');
 const searchRoutes = require('./routes/searchRoutes');
+const authRoutes = require('./routes/authRoutes');
 const connectToDatabase = require('./models/db');
 const { loadData } = require("./util/import-mongo/index");
 
@@ -31,6 +32,7 @@ app.use(pinoHttp({ logger }));
 // Use Routes
 app.use('/api/secondchance/items', secondChanceItemsRoutes);  // Add this line to connect the routes
 app.use('/api/secondchance/search', searchRoutes);
+app.use('/api/auth', authRoutes);
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error(err);
