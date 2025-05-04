@@ -1,7 +1,6 @@
 const express = require('express')
 const multer = require('multer')
 const path = require('path')
-const fs = require('fs')
 const router = express.Router()
 const connectToDatabase = require('../models/db')
 const logger = require('../logger')
@@ -40,7 +39,7 @@ router.post('/', upload.single('file'), async (req, res, next) => {
   try {
     const db = await connectToDatabase()
     const collection = db.collection('secondChanceItems')
-    let secondChanceItem = req.body
+    const secondChanceItem = req.body // Changed let to const
 
     const lastItemQuery = await collection.find().sort({ id: -1 }).limit(1).toArray()
     if (lastItemQuery.length > 0) {
@@ -101,10 +100,10 @@ router.put('/:id', async (req, res, next) => {
     }
 
     // Use object shorthand and camelCase for variable names
-    const { category, condition, age_days, description } = req.body
+    const { category, condition, ageDays, description } = req.body // Changed to camelCase
     secondChanceItem.category = category
     secondChanceItem.condition = condition
-    secondChanceItem.ageDays = age_days // Renamed to camelCase
+    secondChanceItem.ageDays = ageDays // Renamed to camelCase
     secondChanceItem.description = description
     secondChanceItem.ageYears = Number((secondChanceItem.ageDays / 365).toFixed(1)) // Renamed age_years to camelCase
     secondChanceItem.updatedAt = new Date()
