@@ -9,7 +9,7 @@ router.get('/', async (req, res, next) => {
         const collection = db.collection("secondChanceItems");
 
         // Initialize the query object
-        let query = {};
+        const query = {}; // Changed from let to const
 
         // Add the name filter
         if (req.query.name && req.query.name.trim() !== '') {
@@ -23,8 +23,8 @@ router.get('/', async (req, res, next) => {
         if (req.query.condition) {
             query.condition = req.query.condition;
         }
-        if (req.query.age_years) {
-            query.age_years = { $lte: parseInt(req.query.age_years) };
+        if (req.query.ageYears) { // Changed `age_years` to `ageYears`
+            query.ageYears = { $lte: parseInt(req.query.ageYears) }; // Changed `age_years` to `ageYears`
         }
 
         // Fetch the results and store them in `gifts`
