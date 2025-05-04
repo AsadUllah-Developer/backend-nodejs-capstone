@@ -1,53 +1,23 @@
-GitHub Workflow
-Examine the workflow template provided below.
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
 name: 'CI/CD'
+
 on:
   push:
     branches: [master, main]
   pull_request:
     branches: [master, main]
+    
 jobs:
   lint_js:
       name: Lint JavaScript Files
       runs-on: ubuntu-latest
+      
       steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        
       - name: Install Node.js
         uses: actions/setup-node@v4
+        
       - name: Install and Run Linter
         run: |
           # This command finds all JavaScript files recursively and runs JSHint on them
@@ -60,32 +30,3 @@ jobs:
           # find ./secondChance-backend -name index.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
           # find ./sentiment -name index.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
           echo "Linted all the js files successfully"
-
-Copied!
-Line 1 contains the name of the workflow.
-The lines after on define when this workflow will run. The workflow should run when developers push a change to the main branch or create a pull_request. These two ways are captured as follows:
-run on push to the main branch (main or master):
-1
-2
-push:
-  branches: [master, main]
-
-Copied!
-run when PR is created on main branches (main or master):
-1
-2
-pull_request:
-  branches: [master, main]
-
-Copied!
-Next, this workflow defines 1 job:
-lint_js: Lint specified JavaScript files
-GitHub Jobs
-Let's look at each of these jobs:
-
-lint_js
-Set up the Node.js runtime for the action to run using the actions/setup-node@v4 action.
-Set up package.json for the root directory.
-Install eslint linter and the required plugins.
-Run the linting command on the .js files specified using the configuration in .eslintrc.js.
-Print a message indicating success.
