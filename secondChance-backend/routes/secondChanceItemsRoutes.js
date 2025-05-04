@@ -1,7 +1,7 @@
 const express = require('express')
 const multer = require('multer')
 const path = require('path')
-// Removed fs as it's unused
+const fs = require('fs')
 const router = express.Router()
 const connectToDatabase = require('../models/db')
 const logger = require('../logger')
@@ -26,7 +26,6 @@ router.get('/', async (req, res, next) => {
   logger.info('/ called')
   try {
     const db = await connectToDatabase()
-
     const collection = db.collection('secondChanceItems')
     const secondChanceItems = await collection.find({}).toArray()
     res.json(secondChanceItems)
@@ -41,7 +40,7 @@ router.post('/', upload.single('file'), async (req, res, next) => {
   try {
     const db = await connectToDatabase()
     const collection = db.collection('secondChanceItems')
-    const secondChanceItem = req.body // Using const for secondChanceItem
+    let secondChanceItem = req.body
 
     const lastItemQuery = await collection.find().sort({ id: -1 }).limit(1).toArray()
     if (lastItemQuery.length > 0) {
@@ -50,8 +49,8 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       secondChanceItem.id = '1'
     }
 
-    const dateAdded = Math.floor(new Date().getTime() / 1000) // Renamed date_added to dateAdded
-    secondChanceItem.dateAdded = dateAdded // Updated here
+    const dateAdded = Math.floor(new Date().getTime() / 1000) // Renamed to camelCase
+    secondChanceItem.dateAdded = dateAdded
 
     if (req.file) {
       secondChanceItem.imagePath = path.join('/images', req.file.filename)
@@ -76,7 +75,7 @@ router.get('/:id', async (req, res, next) => {
     const collection = db.collection('secondChanceItems')
     const id = req.params.id
 
-    const secondChanceItem = await collection.findOne({ id })
+    const secondChanceItem = await collection.findOne({ id: id })
 
     if (!secondChanceItem) {
       return res.status(404).send('secondChanceItem not found')
@@ -101,12 +100,13 @@ router.put('/:id', async (req, res, next) => {
       return res.status(404).json({ error: 'secondChanceItem not found' })
     }
 
-    const { category, condition, age_days, description } = req.body // Using object shorthand
+    // Use object shorthand and camelCase for variable names
+    const { category, condition, age_days, description } = req.body
     secondChanceItem.category = category
     secondChanceItem.condition = condition
-    secondChanceItem.age_days = age_days
+    secondChanceItem.ageDays = age_days // Renamed to camelCase
     secondChanceItem.description = description
-    secondChanceItem.age_years = Number((secondChanceItem.age_days / 365).toFixed(1))
+    secondChanceItem.ageYears = Number((secondChanceItem.ageDays / 365).toFixed(1)) // Renamed age_years to camelCase
     secondChanceItem.updatedAt = new Date()
 
     const updatepreloveItem = await collection.findOneAndUpdate(
