@@ -1,7 +1,7 @@
 const express = require('express')
 const multer = require('multer')
 const path = require('path')
-const fs = require('fs')
+// Removed fs as it's unused
 const router = express.Router()
 const connectToDatabase = require('../models/db')
 const logger = require('../logger')
@@ -26,9 +26,6 @@ router.get('/', async (req, res, next) => {
   logger.info('/ called')
   try {
     const db = await connectToDatabase()
-    // Step 2: task 2 - insert code here
-    // Step 2: task 3 - insert code here
-    // Step 2: task 4 - insert code here
 
     const collection = db.collection('secondChanceItems')
     const secondChanceItems = await collection.find({}).toArray()
@@ -44,7 +41,7 @@ router.post('/', upload.single('file'), async (req, res, next) => {
   try {
     const db = await connectToDatabase()
     const collection = db.collection('secondChanceItems')
-    let secondChanceItem = req.body
+    const secondChanceItem = req.body // Using const for secondChanceItem
 
     const lastItemQuery = await collection.find().sort({ id: -1 }).limit(1).toArray()
     if (lastItemQuery.length > 0) {
@@ -53,8 +50,8 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       secondChanceItem.id = '1'
     }
 
-    const date_added = Math.floor(new Date().getTime() / 1000)
-    secondChanceItem.date_added = date_added
+    const dateAdded = Math.floor(new Date().getTime() / 1000) // Renamed date_added to dateAdded
+    secondChanceItem.dateAdded = dateAdded // Updated here
 
     if (req.file) {
       secondChanceItem.imagePath = path.join('/images', req.file.filename)
@@ -79,7 +76,7 @@ router.get('/:id', async (req, res, next) => {
     const collection = db.collection('secondChanceItems')
     const id = req.params.id
 
-    const secondChanceItem = await collection.findOne({ id: id })
+    const secondChanceItem = await collection.findOne({ id })
 
     if (!secondChanceItem) {
       return res.status(404).send('secondChanceItem not found')
@@ -104,10 +101,11 @@ router.put('/:id', async (req, res, next) => {
       return res.status(404).json({ error: 'secondChanceItem not found' })
     }
 
-    secondChanceItem.category = req.body.category
-    secondChanceItem.condition = req.body.condition
-    secondChanceItem.age_days = req.body.age_days
-    secondChanceItem.description = req.body.description
+    const { category, condition, age_days, description } = req.body // Using object shorthand
+    secondChanceItem.category = category
+    secondChanceItem.condition = condition
+    secondChanceItem.age_days = age_days
+    secondChanceItem.description = description
     secondChanceItem.age_years = Number((secondChanceItem.age_days / 365).toFixed(1))
     secondChanceItem.updatedAt = new Date()
 
