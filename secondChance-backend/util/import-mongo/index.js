@@ -1,42 +1,51 @@
-require('dotenv').config();
-const { MongoClient } = require('mongodb');
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config()
+const { MongoClient } = require('mongodb')
+const fs = require('fs')
+const path = require('path')
 
-const url = `${process.env.MONGO_URL}`;
-const filename = path.join(__dirname, 'secondChanceItems.json');
-const dbName = 'secondChance';
-const collectionName = 'secondChanceItems';
+// MongoDB connection URL with authentication options
+const url = process.env.MONGO_URL
+const filename = path.join(__dirname, 'secondChanceItems.json')
+const dbName = 'secondChance'
+const collectionName = 'secondChanceItems'
 
-const data = JSON.parse(fs.readFileSync(filename, 'utf8')).docs;
+// notice you have to load the array of items into the data object
+const data = JSON.parse(fs.readFileSync(filename, 'utf8')).docs
 
+// connect to database and insert data into the collection
 async function loadData() {
-  const client = new MongoClient(url);
+  const client = new MongoClient(url)
 
   try {
-    await client.connect();
-    console.log('Connected successfully to server');
+    // Connect to the MongoDB client
+    await client.connect()
+    console.log('Connected successfully to server')
 
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-    const cursor = await collection.find({});
-    const documents = await cursor.toArray();
+    // database will be created if it does not exist
+    const db = client.db(dbName)
+
+    // collection will be created if it does not exist
+    const collection = db.collection(collectionName)
+    const cursor = await collection.find({})
+    const documents = await cursor.toArray()
 
     if (documents.length === 0) {
-      const insertResult = await collection.insertMany(data);
-      console.log('Inserted documents:', insertResult.insertedCount);
+      // Insert data into the collection
+      const insertResult = await collection.insertMany(data)
+      console.log('Inserted documents:', insertResult.insertedCount)
     } else {
-      console.log('Items already exist in DB');
+      console.log('Items already exist in DB')
     }
   } catch (err) {
-    console.error(err);
+    console.error(err)
   } finally {
-    await client.close();
+    // Close the connection
+    await client.close()
   }
 }
 
-loadData();
+loadData()
 
 module.exports = {
-  loadData,
-};
+  loadData
+}
